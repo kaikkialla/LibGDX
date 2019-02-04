@@ -19,7 +19,7 @@ public class Platform extends TigetObject{
     Texture texture;
 
     BodyDef bodyDef;
-    Body platform;
+    Body body;
 
 
 
@@ -30,11 +30,9 @@ public class Platform extends TigetObject{
         this.width = width;
         this.height = height;
 
-        if(texture != null) {
-            texture = new Texture("platform.png");
-            sprite = new Sprite(texture);
-            sprite.flip(true, false);
-        }
+        texture = new Texture("platform.png");
+        sprite = new Sprite(texture);
+        sprite.flip(false, true);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
@@ -43,19 +41,19 @@ public class Platform extends TigetObject{
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(width / 2, height / 2);
-        platform = world.createBody(bodyDef);
-        platform.createFixture(shape, 2f);
+        body = world.createBody(bodyDef);
+        body.createFixture(shape, 2f);
     }
 
 
 
 
-    
-    private void render(Batch batch) {
-        sprite.setPosition(platform.getPosition().x, platform.getPosition().y);
+
+    public void render(Batch batch) {
+        sprite.setPosition(body.getPosition().x - width / 2, body.getPosition().y - height / 2);//
         sprite.setSize(width, height);
         sprite.setOriginCenter();
-        sprite.setRotation((float) Math.toDegrees(platform.getAngle()));
+        sprite.setRotation((float) Math.toDegrees(body.getAngle()));
         sprite.draw(batch);
     }
 }
