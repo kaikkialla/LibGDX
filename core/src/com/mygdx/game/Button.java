@@ -6,27 +6,28 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 
-public class Button extends Actor{
 
-    Sprite buttonSprite;
+public class Button extends Actor {
+    private Sprite buttonSprite;
 
-    Button(Texture texture, float x, float y, float width, float heigth) {
+    Button(Texture texture, float x, float y, float width, float height) {
         buttonSprite = new Sprite(texture);
-        setBounds(x, y, width, heigth);
-
+        setBounds(x, y, width, height);
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
         buttonSprite.draw(batch);
     }
 
+
     @Override
     protected void positionChanged() {
-        super.positionChanged();
         buttonSprite.setPosition(getX(), getY());
     }
 
-
+    @Override
+    protected void sizeChanged() {
+        buttonSprite.setSize(getWidth(), getHeight());
+    }
 }

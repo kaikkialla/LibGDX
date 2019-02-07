@@ -52,45 +52,31 @@ public class MyGdxGame extends ApplicationAdapter {
 	Button mRightButton;
 	Button mUpButton;
 
+	float BUTTON_WIDTH = 150;
+	float BUTTON_HEIGHT = 150;
 
 	@Override
 	public void create () {
-		UI = new Stage();
-		world = new World(new Vector2(0, 9.8f), true);
-		batch = new SpriteBatch();
-		camera = new OrthographicCamera();
 
 		DELTA_TIME = Gdx.graphics.getDeltaTime();
 		SCREEN_WIDTH = Gdx.graphics.getWidth();
 		SCREEN_HEIGHT = Gdx.graphics.getHeight();
 
 
-		camera.setToOrtho(true, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		camera.zoom = cameraZoom;
-		try{
-			camera.position.set(Player.getBody().getPosition(), camera.position.z);
-		} catch (Exception e) {}
+		batch = new SpriteBatch();
+		camera = new OrthographicCamera();
 
-		camera.update();
-
-		renderQueue = new LinkedList<TigetObject>();
-
-		mPlayer = new Player(world, 300 * cameraZoom, 200 * cameraZoom, 75 * cameraZoom);
-		renderQueue.push(mPlayer);
-		renderQueue.push(new Platform(world, 300 * cameraZoom, 600 * cameraZoom, 200, 100 * cameraZoom));
+		resize(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
 
 
 
 
+		UI = new Stage();
+		mLeftButton = new Button(new Texture("left.png"), 200, 200, BUTTON_WIDTH, BUTTON_HEIGHT);
+		mRightButton = new Button(new Texture("right.png"), 600, 200, BUTTON_WIDTH, BUTTON_HEIGHT);
+		mUpButton = new Button(new Texture("up.png"), Gdx.graphics.getWidth() - 500, 200, BUTTON_WIDTH, BUTTON_HEIGHT);
 
-
-
-		mLeftButton = new Button(new Texture("left.png"), 0* cameraZoom,  0 * cameraZoom, 200 * cameraZoom, 200 * cameraZoom);
-		mRightButton = new Button(new Texture("right.png"), 1000 * cameraZoom, 0 * cameraZoom, 64 * cameraZoom, 64 * cameraZoom);
-		mUpButton = new Button(new Texture("up.png"), 2000 * cameraZoom, 0 * cameraZoom, 64 * cameraZoom, 64 * cameraZoom);
-
-		//leftButton.setBounds(200, 200, 32,32);
 		UI.addActor(mLeftButton);
 		UI.addActor(mRightButton);
 		UI.addActor(mUpButton);
@@ -100,40 +86,80 @@ public class MyGdxGame extends ApplicationAdapter {
 		mLeftButton.addListener(new ActorGestureListener() {
 			@Override
 			public void touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				super.touchDown(event, x, y, pointer, button);
 				mPlayer.move(Player.Direction.LEFT);
-				//
+			}
+
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				mPlayer.stop();
 			}
 		});
 
 		mRightButton.addListener(new ActorGestureListener() {
 			@Override
 			public void touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				super.touchDown(event, x, y, pointer, button);
 				mPlayer.move(Player.Direction.RIGHT);
-				//
+			}
+
+			@Override
+			public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+				mPlayer.stop();
 			}
 		});
 
-		mUpButton.addListener(new ActorGestureListener() {
-			@Override
-			public void touchDown(InputEvent event, float x, float y, int pointer, int button) {
-				super.touchDown(event, x, y, pointer, button);
-				//
-			}
-		});
+		Gdx.input.setInputProcessor(UI);
+
+
+
+		world = new World(new Vector2(0, 100), true);
+
+		camera.setToOrtho(true, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		camera.zoom = cameraZoom;
+
+		camera.update();
+
+		renderQueue = new LinkedList<TigetObject>();
+
+		mPlayer = new Player(world,
+				300 * cameraZoom,
+				0 * cameraZoom,
+				75 * cameraZoom);
+		renderQueue.push(mPlayer);
+
+
+		Platform platform1 = new Platform(world,
+				600 * cameraZoom,
+				600 * cameraZoom,
+				1200 * cameraZoom,
+				100 * cameraZoom);
+
+		Platform platform2 = new Platform(world,
+				(1500 - 69) * cameraZoom,
+				(600 + 142) * cameraZoom,
+				600 * cameraZoom,
+				100 * cameraZoom);
+		platform2.body.setTransform(platform2.x, platform2.y, 0.5235987756f);
+
+
+
+		renderQueue.push(platform1);
+		renderQueue.push(platform2);
+
 
 	}
 
 	@Override
 	public void render () {
-		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-		world.step(1/4f, 6, 2);
+		camera.position.set(Player.getBody().getPosition(), camera.position.z);
+		camera.update();
+		world.step(Gdx.graphics.getDeltaTime(), 6, 100);
 
 		batch.setProjectionMatrix(camera.combined);
 		batch.begin();
+
+		//batch.draw(new Texture("bg.png"), 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+
 
 		for (TigetObject gameObject : renderQueue)
 			gameObject.render(batch);

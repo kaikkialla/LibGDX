@@ -27,7 +27,7 @@ public class Player extends TigetObject{
     BodyDef bodyDef;
     static Body body;
 
-    float PLAYER_IMPULSE = 10;
+    float PLAYER_IMPULSE = 1000;
 
     public Direction direction = NONE;
 
@@ -52,6 +52,7 @@ public class Player extends TigetObject{
         CircleShape shape = new CircleShape();
         shape.setRadius(radius);
         body = world.createBody(bodyDef);
+        //body.setLinearDamping(20f);
         body.createFixture(shape, 2f);
     }
 
@@ -71,16 +72,33 @@ public class Player extends TigetObject{
 
     private void update() {
         if(direction == LEFT) {
-            body.applyLinearImpulse(new Vector2(-PLAYER_IMPULSE, 0), body.getWorldCenter(), true);
+            //body.applyForceToCenter(new Vector2(-PLAYER_IMPULSE, 0), true);
+            body.applyLinearImpulse(
+                    new Vector2(-PLAYER_IMPULSE, 0),
+                    body.getWorldCenter(),
+                    true
+            );
         } else if(direction == RIGHT) {
-            body.applyLinearImpulse(new Vector2(-PLAYER_IMPULSE, 0), body.getWorldCenter(), true);
+            //body.applyForceToCenter(new Vector2(PLAYER_IMPULSE, 0), true);
+
+            body.applyLinearImpulse(
+                    new Vector2(PLAYER_IMPULSE, 0),
+                    body.getWorldCenter(),
+                    true
+            );
+            /*body.applyLinearImpulse(
+                    new Vector2(PLAYER_IMPULSE, 0),
+                    body.getWorldCenter(),
+                    true
+            );
+            */
         }
     }
 
 
 
     public void jump() {
-
+        body.applyForceToCenter(new Vector2(0, PLAYER_IMPULSE), true);
     }
 
     public void move(Direction direction) {
